@@ -1,0 +1,40 @@
+version: "1"
+
+package:
+  id: io.github.qlcplugs
+  name: qlcplugs
+  version: 4.13.2.3
+  kind: app
+  description: |
+    Q Light Controller Plus (QLC+) is a free and cross-platform software to control DMX or analog lighting systems like moving heads, dimmers, scanners etc.
+
+command:
+  - /opt/apps/io.github.qlcplugs/files/bin/qlcplus
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+sources:
+  - kind: git
+    url: https://github.com/mcallegari/qlcplus.git
+    version: master
+    commit: 2ea9bb40aa5e5d958364f26e587286169aceb8cc
+  - kind: file
+    url: http://ftp.cn.debian.org/debian/pool/main/libf/libftdi1/libftdi1-dev_1.4-1+b2_amd64.deb
+    digest: 04d204b24e7521db3dec1e0ff6d095730401ade2afa0da53e312572902c447ba
+  - kind: file
+    url: http://ftp.cn.debian.org/debian/pool/main/libf/libftdi1/libftdi1-2_1.4-1+b2_amd64.deb
+    digest: 77d23f2adac5802333eb16a4b04eab96576c49cca661962c86fff2ee571e758e
+  - kind: file
+    url: http://ftp.cn.debian.org/debian/pool/main/libu/libusb-1.0/libusb-1.0-0-dev_1.0.22-2_amd64.deb
+    digest: 0c5bc545ab92ae00274f3b33fdadfa895024877884abaaa86380846669252429
+  - kind: file
+    url: http://ftp.cn.debian.org/debian/pool/main/libu/libusb-1.0/libusb-1.0-0_1.0.22-2_amd64.deb
+    digest: 37be9e682f0fd7533b7bb9d91af802a5070ad68eb9434036af5bc2815efb2615
+build: |
+  bash ./install_dep linglong/sources $PREFIX
+  cd /project/linglong/sources/qlcplus.git
+  git apply ../../../0001-install.patch
+  qmake -makefile PREFIX=${PREFIX} LIB_INSTALL_DIR=${PREFIX}/lib/${TRIPLET}
+  make -j$(nproc)
+  make install
